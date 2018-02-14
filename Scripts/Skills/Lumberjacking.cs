@@ -43,8 +43,8 @@ namespace Server.Engines.Harvest
             lumber.BankHeight = 3;
 
             // Every bank holds from 20 to 45 logs
-            lumber.MinTotal = 20;
-            lumber.MaxTotal = 45;
+            lumber.MinTotal = 50;
+            lumber.MaxTotal = 100;
 
             // A resource bank will respawn its content every 20 to 30 minutes
             lumber.MinRespawn = TimeSpan.FromMinutes(20.0);
@@ -57,7 +57,7 @@ namespace Server.Engines.Harvest
             lumber.Tiles = m_TreeTiles;
 
             // Players must be within 2 tiles to harvest
-            lumber.MaxRange = 2;
+            lumber.MaxRange = 3;
 
             // Ten logs per harvest action
             lumber.ConsumedPerHarvest = 10;
@@ -67,8 +67,8 @@ namespace Server.Engines.Harvest
             lumber.EffectActions = new int[] { Core.SA ? 7 : 13 };
             lumber.EffectSounds = new int[] { 0x13E };
             lumber.EffectCounts = (Core.AOS ? new int[] { 1 } : new int[] { 1, 2, 2, 2, 3 });
-            lumber.EffectDelay = TimeSpan.FromSeconds(1.6);
-            lumber.EffectSoundDelay = TimeSpan.FromSeconds(0.9);
+            lumber.EffectDelay = TimeSpan.FromSeconds(0.1);
+            lumber.EffectSoundDelay = TimeSpan.FromSeconds(0.1);
 
             lumber.NoResourcesMessage = 500493; // There's not enough wood here to harvest.
             lumber.FailMessage = 500495; // You hack at the tree for a while, but fail to produce any useable wood.

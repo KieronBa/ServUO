@@ -4620,7 +4620,7 @@ namespace Server
 								from.Send(new PlaySound(liftSound, from));
 							}
 
-							from.NextActionTime = Core.TickCount + m_ActionDelay;
+							//from.NextActionTime = Core.TickCount + m_ActionDelay;
 
 							if (fixMap != null && shouldFix)
 							{
@@ -6058,7 +6058,7 @@ namespace Server
 						if (version < 15)
 						{
 							m_Followers = 0;
-							m_FollowersMax = 5;
+							m_FollowersMax = 1000;
 						}
 
 						m_Location = reader.ReadPoint3D();

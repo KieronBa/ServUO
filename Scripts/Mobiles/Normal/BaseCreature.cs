@@ -251,6 +251,9 @@ namespace Server.Mobiles
 
         private Mobile m_SummonMaster;
 
+		private int	m_MaxStr = -1;
+		private int	m_MaxDex = -1;
+		private int	m_MaxInt = -1;
         private int m_HitsMax = -1;
         private int m_StamMax = -1;
         private int m_ManaMax = -1;
@@ -385,7 +388,7 @@ namespace Server.Mobiles
         public const bool BondingEnabled = true;
 
         public virtual bool IsBondable { get { return (BondingEnabled && !Summoned && !m_Allured); } }
-        public virtual TimeSpan BondingDelay { get { return TimeSpan.FromDays(7.0); } }
+        public virtual TimeSpan BondingDelay { get { return TimeSpan.FromDays(1.0); } }
         public virtual TimeSpan BondingAbandonDelay { get { return TimeSpan.FromDays(1.0); } }
 
         public override bool CanRegenHits { get { return !m_IsDeadPet && !Summoned && base.CanRegenHits; } }
@@ -1802,6 +1805,15 @@ namespace Server.Mobiles
         public virtual bool HoldSmartSpawning { get { return IsParagon; } }
         public virtual bool UseSmartAI { get { return false; } }
 
+		[CommandProperty( AccessLevel.GameMaster )]
+		public virtual int MaxStr{ get{ return m_MaxStr; } set{ m_MaxStr = value; } }
+		
+		[CommandProperty( AccessLevel.GameMaster )]
+		public virtual int MaxDex{ get{ return m_MaxDex; } set{ m_MaxDex = value; } }
+		
+		[CommandProperty( AccessLevel.GameMaster )]
+		public virtual int MaxInt{ get{ return m_MaxInt; } set{ m_MaxInt = value; } }
+
         [CommandProperty(AccessLevel.GameMaster)]
         public virtual int DamageMin { get { return m_DamageMin; } set { m_DamageMin = value; } }
 
@@ -2080,8 +2092,8 @@ namespace Server.Mobiles
         public virtual void CheckReflect(Mobile caster, ref bool reflect)
         { }
 
-        public virtual void OnCarve(Mobile from, Corpse corpse, Item with)
-        {
+			public virtual void OnCarve(Mobile from, Corpse corpse, Item with)
+			{
             int feathers = Feathers;
             int wool = Wool;
             int meat = Meat;
@@ -2135,28 +2147,28 @@ namespace Server.Mobiles
 
                 if (feathers != 0)
                 {
-                    corpse.AddCarvedItem(new Feather(feathers), from);
-                    from.SendLocalizedMessage(500479); // You pluck the bird. The feathers are now on the corpse.
+                    from.PlaceInBackpack(new Feather(feathers));
+                    from.SendMessage("You pluck the bird and put the feathers in your backpack."); // You pluck the bird and put the feathers in your backpack.
                 }
 
                 if (wool != 0)
                 {
-                    corpse.AddCarvedItem(new TaintedWool(wool), from);
-                    from.SendLocalizedMessage(500483); // You shear it, and the wool is now on the corpse.
+                    from.PlaceInBackpack(new TaintedWool(wool));
+                    from.SendMessage("You shear it, and place the wool in your backpack."); // You shear it, and place the wool in your backpack.
                 }
 
                 if (meat != 0)
                 {
                     if (MeatType == MeatType.Ribs)
-                        corpse.AddCarvedItem(new RawRibs(meat), from);
+                        from.PlaceInBackpack(new RawRibs(meat));
                     else if (MeatType == MeatType.Bird)
-                        corpse.AddCarvedItem(new RawBird(meat), from);
+                        from.PlaceInBackpack(new RawBird(meat));
                     else if (MeatType == MeatType.LambLeg)
-                        corpse.AddCarvedItem(new RawLambLeg(meat), from);
+                        from.PlaceInBackpack(new RawLambLeg(meat));
                     else if (MeatType == MeatType.Rotworm)
-                        corpse.AddCarvedItem(new RawRotwormMeat(meat), from);
+                        from.PlaceInBackpack(new RawRotwormMeat(meat));
 
-                    from.SendLocalizedMessage(500467); // You carve some meat, which remains on the corpse.
+                    from.SendMessage("You carve some meat and place it in your backpack."); // You carve some meat and place it in your backpack.
                 }
 
                 if (hides != 0)
@@ -2228,18 +2240,18 @@ namespace Server.Mobiles
                     
                     foreach (Item s in list)
                     {
-                        corpse.AddCarvedItem(s, from);
+                        from.PlaceInBackpack(s);
                     }
 
                     list.Clear();
 
-                    from.SendLocalizedMessage(1079284); // You cut away some scales, but they remain on the corpse.
+                    from.SendMessage("You cut away some scales and place them in your backpack."); // You cut away some scales, but they remain on the corpse.
                 }
 
                 if (dragonblood != 0)
                 {
-                    corpse.AddCarvedItem(new DragonBlood(dragonblood), from);
-                    from.SendLocalizedMessage(1094946); // Some blood is left on the corpse.
+                    from.PlaceInBackpack(new DragonBlood(dragonblood));
+                    from.SendMessage("You bottle some blood and place it in your backpack."); // Some blood is left on the corpse.
                 }
 
                 corpse.Carved = true;
@@ -2392,6 +2404,9 @@ namespace Server.Mobiles
             writer.Write(m_SummonMaster);
 
             // Version 6
+			writer.Write( (int) m_MaxStr );
+			writer.Write( (int) m_MaxDex );
+			writer.Write( (int) m_MaxInt );
             writer.Write(m_HitsMax);
             writer.Write(m_StamMax);
             writer.Write(m_ManaMax);
@@ -2586,6 +2601,9 @@ namespace Server.Mobiles
 
             if (version >= 6)
             {
+				m_MaxStr = reader.ReadInt();
+				m_MaxDex = reader.ReadInt();
+				m_MaxInt = reader.ReadInt();
                 m_HitsMax = reader.ReadInt();
                 m_StamMax = reader.ReadInt();
                 m_ManaMax = reader.ReadInt();
@@ -3370,30 +3388,11 @@ namespace Server.Mobiles
 
         public void AddFollowers()
         {
-            if (m_ControlMaster != null)
-            {
-                m_ControlMaster.Followers += ControlSlots;
+            if ( m_ControlMaster != null && m_ControlMaster.Followers < 0 )
+                m_ControlMaster.Followers = 0;
 
-                if (m_ControlMaster is PlayerMobile && !(this is PersonalAttendant))
-                {
-                    ((PlayerMobile)m_ControlMaster).AllFollowers.Add(this);
-
-                    NetState ns = m_ControlMaster.NetState;
-
-                    if (ns != null && ns.IsEnhancedClient && Commandable)
-                    {
-                        ns.Send(new PetWindow((PlayerMobile)m_ControlMaster, this));
-                    }
-                }
-            }
-            else if (m_SummonMaster != null)
-            {
-                m_SummonMaster.Followers += ControlSlots;
-                if (m_SummonMaster is PlayerMobile)
-                {
-                    ((PlayerMobile)m_SummonMaster).AllFollowers.Add(this);
-                }
-            }
+            else if ( m_SummonMaster != null && m_SummonMaster.Followers < 0 )
+                m_SummonMaster.Followers = 0;
         }
 
         [CommandProperty(AccessLevel.GameMaster)]
@@ -4710,36 +4709,42 @@ namespace Server.Mobiles
         public void SetStr(int val)
         {
             RawStr = val;
+			m_MaxStr = val;
             Hits = HitsMax;
         }
 
         public void SetStr(int min, int max)
         {
             RawStr = Utility.RandomMinMax(min, max);
+			m_MaxStr = max;
             Hits = HitsMax;
         }
 
         public void SetDex(int val)
         {
             RawDex = val;
+			m_MaxDex = val;
             Stam = StamMax;
         }
 
         public void SetDex(int min, int max)
         {
             RawDex = Utility.RandomMinMax(min, max);
+			m_MaxDex = max;
             Stam = StamMax;
         }
 
         public void SetInt(int val)
         {
             RawInt = val;
+			m_MaxInt = val;
             Mana = ManaMax;
         }
 
         public void SetInt(int min, int max)
         {
             RawInt = Utility.RandomMinMax(min, max);
+			m_MaxInt = max;
             Mana = ManaMax;
         }
 

@@ -70,7 +70,7 @@ namespace Server.Items
 		{
 			if (from.InRange(GetWorldLocation(), Range))
 			{
-				from.RevealingAction();
+				//from.RevealingAction();
 
 				from.SendLocalizedMessage(500948); // Who will you use the bandages on?
 

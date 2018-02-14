@@ -457,7 +457,6 @@ namespace Server.Misc
             {
                 if (from.RawStatTotal >= from.StatCap)
                     return false;
-            }
 
             switch ( stat )
             {
@@ -468,7 +467,18 @@ namespace Server.Misc
                 case Stat.Int:
                     return (from.IntLock == StatLockType.Up && from.RawInt < from.IntCap);
             }
+			}
 
+			else if (from is BaseCreature && ((BaseCreature)from).Controlled)
+			{
+			
+			switch ( stat )
+			{
+				case Stat.Str: return ( ((BaseCreature)from).RawStr < ((BaseCreature)from).MaxStr );
+				case Stat.Dex: return ( ((BaseCreature)from).RawDex < ((BaseCreature)from).MaxDex );
+				case Stat.Int: return ( ((BaseCreature)from).RawInt < ((BaseCreature)from).MaxInt );
+			}
+			}
             return false;
         }
 

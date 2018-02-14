@@ -42,7 +42,7 @@ namespace Server.Commands
 
             Register("Help", AccessLevel.Player, new CommandEventHandler(Help_OnCommand));
 
-            Register("Save", AccessLevel.Administrator, new CommandEventHandler(Save_OnCommand));
+            Register("Save", AccessLevel.Player, new CommandEventHandler(Save_OnCommand));
             Register("BackgroundSave", AccessLevel.Administrator, new CommandEventHandler(BackgroundSave_OnCommand));
             Register("BGSave", AccessLevel.Administrator, new CommandEventHandler(BackgroundSave_OnCommand));
             Register("SaveBG", AccessLevel.Administrator, new CommandEventHandler(BackgroundSave_OnCommand));
