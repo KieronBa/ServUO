@@ -323,7 +323,7 @@ namespace Server.Mobiles
             return EconomyItem;
         }
 
-        public void OnRestock()
+        /*public void OnRestock()
         {
             if (m_Amount <= 0)
             {
@@ -338,7 +338,7 @@ namespace Server.Mobiles
                 * Here we implement differently: the quantity is halved only if less than half
                 * of the maximum quantity was bought. That is, if more than half is sold, then
                 * there's clearly a demand and we should not cut down on the stock.
-                */
+                
                 int halfQuantity = m_MaxAmount;
 
                 if (halfQuantity >= 999)
@@ -351,8 +351,14 @@ namespace Server.Mobiles
             }
 
             m_Amount = m_MaxAmount;
-        }
+        }*/
 
+		public void OnRestock()
+        {
+            m_MaxAmount = 999;
+            m_Amount = m_MaxAmount;
+        }
+		
         private bool IsDeleted(IEntity obj)
         {
             if (obj is Item)

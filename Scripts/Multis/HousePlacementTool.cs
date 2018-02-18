@@ -248,7 +248,7 @@ namespace Server.Items
 
                 Region reg = Region.Find(new Point3D(p), from.Map);
 
-                if (from.AccessLevel >= AccessLevel.GameMaster || reg.AllowHousing(from, p))
+                if (from.AccessLevel >= AccessLevel.Player || reg.AllowHousing(from, p))
                     m_Placed = m_Entry.OnPlacement(from, p);
                 else if (reg.IsPartOf<TempNoHousingRegion>())
                     from.SendLocalizedMessage(501270); // Lord British has decreed a 'no build' period, thus you cannot build this house at this time.
