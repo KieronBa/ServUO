@@ -309,21 +309,12 @@ namespace Server.Items
             m.SendMessage(
                 "Teleporting in {0:#,0.##} second{1}",
                 m_Delay.TotalSeconds,
-<<<<<<< HEAD
                 m_Delay.TotalSeconds != 1 ? "s" : String.Empty);
 
             Timer.DelayCall(m_Delay, DelayedTeleportCallback, m);
         }
 
         private void DelayedTeleportCallback(Mobile m)
-=======
-                m_Delay.TotalSeconds != 1 ? "s" : String.Empty);
-
-            Timer.DelayCall(m_Delay, DelayedTeleportCallback, m);
-        }
-
-        private void DelayedTeleportCallback(Mobile m)
->>>>>>> 85b16b88ea48ac535a5b44d140d94746f76e3fa3
         {
             m.EndAction(typeof(Teleporter));
 
