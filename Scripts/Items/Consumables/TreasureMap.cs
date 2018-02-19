@@ -382,7 +382,11 @@ namespace Server.Items
             var lt = map.Tiles.GetLandTile(x, y);
             var ld = TileData.LandTable[lt.ID];
 
+<<<<<<< HEAD
             //Checks for impassable flag..cant walk, cant have a chest
+=======
+            //Checks for impassable flag..cant walk, cant have a chest
+>>>>>>> 85b16b88ea48ac535a5b44d140d94746f76e3fa3
             if (lt.Ignored || (ld.Flags & TileFlag.Impassable) > 0)
             {
                 return false;
@@ -399,6 +403,11 @@ namespace Server.Items
 
             var reg = Region.Find(new Point3D(x, y, lt.Z), map);
 
+<<<<<<< HEAD
+            var reg = Region.Find(new Point3D(x, y, lt.Z), map);
+
+=======
+>>>>>>> 85b16b88ea48ac535a5b44d140d94746f76e3fa3
             //no-go in towns, houses, dungeons and champspawns
             if (reg != null)
             {
